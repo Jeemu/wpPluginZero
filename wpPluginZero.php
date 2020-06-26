@@ -27,4 +27,44 @@ function jeemu_admin_menu_item()
 add_action('admin_menu','jeemu_admin_menu_item');
 
 function jeemu_option_page_display()
-{}
+{
+    if(array_key_exists('submit_scripts', $_POST)){
+        update_option('jeemu_header_scripts', $_POST['header_scripts']);
+        update_option('jeemu_footer_scripts', $_POST['footer_scripts']);
+
+        ?>
+            <div id="setting-error-settings-updated" class="updated_settings-error notice is-dismissible"><strong>Settings Have Been Applied</strong></div>
+        <?php
+    }
+
+    $header_scripts = get_option('jeemu_header_scripts', 'none');
+    $footer_scripts = get_option('jeemu_footer_scripts', 'none');
+
+    ?>
+    <div class="wrap">
+        <h2>Script Options</h2>
+
+        <form method="post" action="">
+            <label for="header_scripts"></label>
+            <textarea name="header_scripts" class="large-text"><?php print $header_scripts ?></textarea>
+            <label for="footer_scripts"></label>
+            <textarea name="footer_scripts" class="large-text"><?php print $footer_scripts ?></textarea>
+            <input type="submit" name="submit_scripts" value="Insert Scripts" class="button button-primary" />
+        </form>
+    </div>
+    <?php
+}
+
+function jeemu_display_header_scripts()
+{
+    $header_scripts = get_option('jeemu_header_scripts', 'none');
+    print $header_scripts;
+}
+add_action('wp_head', 'jeemu_display_header_scripts');
+
+function jeemu_display_footer_scripts()
+{
+    $footer_scripts = get_option('jeemu_footer_scripts', 'none');
+    print $footer_scripts;
+}
+add_action('wp_footer', 'jeemu_display_footer_scripts');
