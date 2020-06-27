@@ -68,3 +68,48 @@ function jeemu_display_footer_scripts()
     print $footer_scripts;
 }
 add_action('wp_footer', 'jeemu_display_footer_scripts');
+
+//Add a contact form, capture its content, and send it to email
+function jeemu_contact_form()
+{
+    $form = '';
+    $form .= '<h3>Contact Form</h3>';
+    $form .= '<form method="post" action="https://www.pst.or.tz/devEnv/thank-you/">';
+    $form .= '<input type="text" name="full_name" placeholder="Your Full Name" />';
+    $form .= '<br/>';
+    $form .= '<input type="text" name="email" placeholder="Email Address" />';
+    $form .= '<br/>';
+    $form .= '<input type="text" name="phone_number" placeholder="Phone" />';
+    $form .= '<br/>';
+    $form .= '<textarea name="message" class="large-text" placeholder="Your message"></textarea>';
+    $form .= '<br/>';
+    $form .= '<input type="submit" name="jeemu_submit_form" value="CONTACT US" class="button button-primary" />';
+    $form .= '</form>';
+
+    return $form;
+}
+add_shortcode('jeemu-form', 'jeemu_contact_form');
+
+function jeemu_set_html_content_type()
+{
+    return 'text/html';
+}
+
+function jeemu_form_capture()
+{
+    if(array_key_exists('jeemu_submit_form', $_POST)){
+        $to = 'jamesjosephtemba@gmail.com';
+        $subject = 'New Test Contact From Jeemu Form';
+        $content = '';
+        $content .= 'Name: '.$_POST['full_name'].' <br /> ';
+        $content .= 'Email: '.$_POST['email'].' <br /> ';
+        $content .= 'Phone: '.$_POST['phone_number'].' <br /> ';
+        $content .= 'Message: '.$_POST['message'].' <br /> ';
+
+        add_filter('wp_mail_content_type', 'jeemu_set_html_content_type');
+        wp_mail($to, $subject, $content);
+        remove_filter('wp_mail_content_type', 'jeemu_set_html_content_type');
+
+    }
+}
+add_action('wp_head', 'jeemu_form_capture');
