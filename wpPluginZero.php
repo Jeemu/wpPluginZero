@@ -113,24 +113,35 @@ function jeemu_form_capture()
         remove_filter('wp_mail_content_type', 'jeemu_set_html_content_type');
 
         /*
-        //Insert the information into a comment (sends blank comment to the comment table - don't know why)
+        //Insert the information into a wordpress comment section
         $time = current_time('mysql');
 
         $contentdata = array(
-            'comment_post_ID' == $post->ID,
-            'comment_author' == $_POST['full_name'],
-            'comment_author_email' == $_POST['email'],
-            'comment_content' == $_POST['message'],
-            'comment_author_ip' == $_SERVER['REMOTE_ADDR'],
-            'comment_date' == $time,
-            'comment_approved' == 1,
+            'comment_post_ID' => $post->ID,
+            'comment_author' => $_POST['full_name'],
+            'comment_author_email' => $_POST['email'],
+            'comment_content' => $_POST['message'],
+            'comment_author_ip' => $_SERVER['REMOTE_ADDR'],
+            'comment_date' => $time,
+            'comment_approved' => 1,
         );
 
         wp_insert_comment($contentdata);
         */
 
         //Insert submission into a custom database table
-        $insertData = $wpdb->get_results("INSERT INTO ".$wpdb->prefix."form_submissions (formdata) VALUES ('".$content."')");
+        $time = current_time('mysql');
+
+        $contentdata = array(
+            'name' => $_POST['full_name'],
+            'email' => $_POST['email'],
+            'phone' => $_POST['phone_number'],
+            'message' => $_POST['message'],
+            'lead_ip' => $_SERVER['REMOTE_ADDR'],
+            'time_submitted' => $time,
+        );
+
+        $insertData = $wpdb->insert($wpdb->prefix.'form_submissions',$contentdata);
 
     }
 }
