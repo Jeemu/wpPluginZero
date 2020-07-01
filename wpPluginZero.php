@@ -108,6 +108,7 @@ function jeemu_form_capture()
         $content .= 'Phone: '.$_POST['phone_number'].' <br /> ';
         $content .= 'Message: '.$_POST['message'].' <br /> ';
 
+        //Send the form contact by email
         add_filter('wp_mail_content_type', 'jeemu_set_html_content_type');
         wp_mail($to, $subject, $content);
         remove_filter('wp_mail_content_type', 'jeemu_set_html_content_type');
@@ -146,4 +147,43 @@ function jeemu_form_capture()
     }
 }
 add_action('wp_head', 'jeemu_form_capture');
+
+//Get information from the database
+function jeemu_get_message()
+{
+    global $wpdb;
+    $displayData = '';
+    
+    /*Use geolocation api to convert submitter IP address into location
+    use ipinfo/ipinfo/IPinfo;
+
+    $access_token = 'd93f47315a4950';
+    $client = new IPinfo($access_token);
+    */
+
+    //Get data from custom database table
+    $getData = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}form_submissions", OBJECT_K);
+
+    if($getData)
+    {
+        foreach ($getData as $getDatum){
+            /*
+            $ip_address = $getDatum->lead_ip;
+            $details = $client->getDetails($ip_address);
+            */
+
+            $displayData .= $getDatum->message.'<br/>Written By: '.$getDatum->name.' <br/>Contacts: '.$getDatum->email.' | '.$getDatum->phone.'<br/><span class="dashicons-before dashicons-clock"> On: '.$getDatum->time_submitted.'</span><hr/>';
+        }
+    }
+    else{
+        $displayData .= "Ooops! It seem there is an error...";
+    }
+    
+
+    $jeemuData = "<p><pre>".$displayData."</pre></p>";
+
+    return $jeemuData;
+
+}
+add_shortcode('jeemu-data','jeemu_get_message');
 
