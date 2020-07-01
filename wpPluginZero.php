@@ -187,3 +187,5 @@ function jeemu_get_message()
 }
 add_shortcode('jeemu-data','jeemu_get_message');
 
+//Insert custom post type logic from another file
+require_once plugin_dir_path( __FILE__ ) . 'jeemu_custom_posttype.php';
